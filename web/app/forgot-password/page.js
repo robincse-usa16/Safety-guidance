@@ -1,0 +1,6 @@
+'use client';
+import Link from 'next/link';
+import { Mail } from 'lucide-react';
+import { useState } from 'react';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+export default function Page(){const[email,setEmail]=useState('');const[message,setMessage]=useState('');async function submit(e){e.preventDefault();const client=getSupabaseBrowserClient();if(!client)return setMessage('Configure Supabase in web/.env.local first.');const{error}=await client.auth.resetPasswordForEmail(email,{redirectTo:`${location.origin}/login`});setMessage(error?error.message:'Check your email for the password reset link.')}return <section className="auth-page"><div className="auth-card"><div className="auth-icon"><Mail/></div><span>ACCOUNT RECOVERY</span><h1>Reset your password</h1><p>We will send a secure recovery link to your email.</p><form onSubmit={submit}><label htmlFor="reset-email">Email address</label><div className="auth-input"><Mail/><input id="reset-email" type="email" required value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@example.com"/></div>{message&&<div className="auth-message">{message}</div>}<button>Send recovery link</button></form><div className="auth-links"><Link href="/login">Back to sign in</Link></div></div></section>}

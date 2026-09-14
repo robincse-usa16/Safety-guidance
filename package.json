@@ -1,0 +1,17 @@
+{
+  "name": "safepay-guardian-v2",
+  "version": "2.1.0",
+  "private": true,
+  "workspaces": ["web", "server"],
+  "scripts": {
+    "dev": "concurrently -n API,WEB -c yellow,cyan \"npm run dev -w server\" \"npm run dev -w web\"",
+    "build": "npm run build -w web",
+    "test": "npm run test -w server",
+    "check": "npm run test && npm run build",
+    "doctor": "node server/scripts/doctor.js",
+    "start:web": "npm run start -w web",
+    "start:api": "npm run start -w server"
+  },
+  "devDependencies": { "concurrently": "^9.2.1" },
+  "engines": { "node": ">=20.19" }
+}

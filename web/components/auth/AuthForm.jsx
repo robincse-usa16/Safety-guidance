@@ -1,0 +1,13 @@
+'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { LoaderCircle, LockKeyhole, Mail, UserRound } from 'lucide-react';
+import { useState } from 'react';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+export default function AuthForm({ mode }) {
+  const router = useRouter();
+  const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [message,setMessage]=useState(''); const [loading,setLoading]=useState(false);
+  const configured=Boolean(getSupabaseBrowserClient());
+  async function submit(event){event.preventDefault();setMessage('');setLoading(true);const supabase=getSupabaseBrowserClient();if(!supabase){setMessage('Supabase is not configured. Add the two NEXT_PUBLIC_SUPABASE values to web/.env.local.');setLoading(false);return;}const response=mode==='register'?await supabase.auth.signUp({email,password}):await supabase.auth.signInWithPassword({email,password});setLoading(false);if(response.error)return setMessage(response.error.message);if(mode==='register')setMessage('Account created. Check your email if confirmation is enabled.');else router.push('/dashboard');}
+  return <div className="auth-card"><div className="auth-icon">{mode==='register'?<UserRound/>:<LockKeyhole/>}</div><span>{mode==='register'?'CREATE ACCOUNT':'WELCOME BACK'}</span><h1>{mode==='register'?'Create your SafePay account':'Sign in to SafePay'}</h1><p>{configured?'Your session is handled securely by Supabase Auth.':'Demo mode is active. Configure Supabase to enable real accounts.'}</p><form onSubmit={submit}><label htmlFor="email">Email address</label><div className="auth-input"><Mail/><input id="email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} required autoComplete="email" placeholder="you@example.com"/></div><label htmlFor="password">Password</label><div className="auth-input"><LockKeyhole/><input id="password" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} required minLength={8} autoComplete={mode==='register'?'new-password':'current-password'} placeholder="Minimum 8 characters"/></div>{message&&<div className="auth-message" role="status">{message}</div>}<button disabled={loading}>{loading?<><LoaderCircle className="spin"/>Please wait...</>:mode==='register'?'Create account':'Continue securely'}</button></form><div className="auth-links">{mode==='register'?<Link href="/login">Already have an account? Sign in</Link>:<><Link href="/forgot-password">Forgot password?</Link><Link href="/register">Create an account</Link></>}<Link href="/scam-checker">Continue with free scanner</Link></div></div>;
+}

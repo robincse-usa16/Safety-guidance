@@ -1,0 +1,1 @@
+export default function ScoreRing({ score, level }) { return <div className={`score-ring ${level}`} style={{ '--score': `${score * 3.6}deg` }}><div><strong>{score}</strong><span>/100</span></div></div>; }
